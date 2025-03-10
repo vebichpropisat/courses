@@ -1,0 +1,63 @@
+{% extends 'authorization/base.html' %}
+
+    {% block auth %}
+
+        <form class="row g-3 needs-validation" method="post" novalidate>
+            {% csrf_token %}
+                <div class="col-md-6 position-relative">
+                    <label for="validationTooltip01" class="form-label">First name</label>
+                    <input type="text" class="form-control" id="validationTooltip01" value="Mark" name="first_name" required>
+                    <div class="valid-tooltip">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="col-md-6 position-relative">
+                    <label for="validationTooltip02" class="form-label">Last name</label>
+                    <input type="text" class="form-control" id="validationTooltip02" value="Otto" name="last_name" required>
+                    <div class="valid-tooltip">
+                        Looks good!
+                    </div>
+                </div>
+                <div class="col-md-6 position-relative">
+                    <label for="validationTooltipUsername" class="form-label">Username</label>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text" id="validationTooltipUsernamePrepend">@</span>
+                        <input type="text" class="form-control {% if message.username %}is-invalid{% endif %}" id="validationTooltipUsername" aria-describedby="validationTooltipUsernamePrepend" name="username" value="{{ request.POST.username|default:'' }}" required>
+                        <div class="invalid-tooltip">
+                            {% if message.username %}
+                                {{ message.username }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 position-relative">
+                    <label for="validationTooltip03" class="form-label">Email</label>
+                    <input type="email" class="form-control {% if message.email %}is-invalid{% endif %}" id="validationTooltip03" name="email" value="{{ request.POST.email|default:'' }}" required>
+                    <div class="invalid-tooltip">
+                        {% if message.email %}
+                            {{ message.email }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6 position-relative">
+                    <label for="validationTooltip03" class="form-label">Пароль</label>
+                    <input type="password" class="form-control" id="validationTooltip03" name="password" required>
+                    <div class="invalid-tooltip">
+                        Please provide a valid password.
+                    </div>
+                </div>
+                <div class="col-md-6 position-relative">
+                    <label for="validationTooltip03" class="form-label">Повторіть пароль</label>
+                    <input type="password" class="form-control {% if message.password2 %}is-invalid{% endif %}" id="validationTooltip03" name="password2" required>
+                    <div class="invalid-tooltip">
+                        {% if message.password2 %}
+                            {{ message.password2 }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-12">
+                    <button class="btn btn-primary" type="submit">Submit form</button>
+                </div>
+        </form>
+
+    {% endblock auth %}

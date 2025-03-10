@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+    {% block title %} Home {% endblock title %}
+    {% block content %}
+        {% include "include/header.html" %}
+        <main class="container mt-5">
+            {% block courses %}
+
+            {% endblock courses %}
+        </main>
+    {% endblock content %}

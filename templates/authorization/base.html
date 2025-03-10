@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+    {% block title %} Authorization {% endblock title %}
+    {% block content %}
+        <main class="container vh-100 d-flex justify-content-center align-items-center">
+            <div class="card w-50">
+                <div class="card-body">
+                    {% block auth %}
+
+                    {% endblock auth %}
+                </div>
+            </div>
+        </main>
+    {% endblock content %}

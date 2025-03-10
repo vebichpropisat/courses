@@ -1,0 +1,31 @@
+{% extends 'authorization/base.html' %}
+
+    {% block auth %}
+
+        <form class="needs-validation" method="post" novalidate>
+            {% csrf_token %}
+                <div class="mb-3 position-relative">
+                    <label for="validationTooltipUsername" class="form-label">Username</label>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text" id="validationTooltipUsernamePrepend">@</span>
+                        <input type="text" class="form-control {% if message.username %}is-invalid{% endif %}" id="validationTooltipUsername" aria-describedby="validationTooltipUsernamePrepend" name="username" value="{{ request.POST.username|default:'' }}" required>
+                        <div class="invalid-tooltip">
+                            {% if message.username %}
+                                {{ message.username }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 position-relative">
+                    <label for="validationTooltip03" class="form-label">Пароль</label>
+                    <input type="password" class="form-control {% if message.password %}is-invalid{% endif %}" id="validationTooltip03" name="password" required>
+                    <div class="invalid-tooltip">
+                        {% if message.password %}
+                            {{ message.password }}
+                        {% endif %}
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit form</button>
+        </form>
+
+    {% endblock auth %} 

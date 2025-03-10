@@ -1,0 +1,40 @@
+{% extends 'shop/base.html' %}
+
+    {% block title %}{{ course.title }}{% endblock %}
+
+    {% block courses %}
+        <h1 class="mt-5">{{ course.title }}</h1>
+        <h2>{{ course.category }}</h2>
+        <p class="rating_sum">Рейтинг:
+            <span class="stars">
+                <i class="bi bi-star"></i>
+                <i class="bi bi-star"></i>
+                <i class="bi bi-star"></i>
+                <i class="bi bi-star"></i>
+                <i class="bi bi-star"></i>
+            </span></p>
+        <p>Price: {{ course.price }}</p>
+        <p>Students Quantity: {{ course.students_qty }}</p>
+        <button class="btn btn-primary">Buy</button>
+
+        <script>
+            // Збираємо всі зірки
+            const stars = document.querySelectorAll('.stars .bi-star');
+
+            stars.forEach((star, index) => {
+                // При наведенні на зірку
+                star.addEventListener('mouseover', () => {
+                    for (let i = 0; i <= index; i++) {
+                        stars[i].classList.replace('bi-star', 'bi-star-fill');
+                    }
+                });
+
+                // Коли курсор йде з зірки
+                star.addEventListener('mouseout', () => {
+                    stars.forEach(star => {
+                        star.classList.replace('bi-star-fill', 'bi-star');
+                    });
+                });
+            });
+        </script>
+    {% endblock courses%}

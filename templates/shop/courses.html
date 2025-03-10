@@ -1,0 +1,42 @@
+{% extends 'shop/base.html' %}
+
+    {% block title %}All Courses{% endblock %}
+
+    {% block courses %}
+
+        <div class="d-flex justify-content-end mb-3">
+            <form method="GET">
+                {% if category_id %}
+                    <input type="hidden" name="category_id" value="{{ category_id }}">
+                {% endif %}
+                {% if search %}
+                    <input type="hidden" name="search" value="{{ search }}">
+                {% endif %}
+                <select class="form-select w-auto" name="sort" onchange="this.form.submit()">
+                    <option {% if not sort_option %}selected{% endif %}>Сортувати</option>
+                    <option value="popularity" {% if sort_option == 'popularity' %}selected{% endif %}>По популярності</option>
+                    <option value="new" {% if sort_option == 'new' %}selected{% endif %}>По новизні</option>
+                    <option value="price_asc" {% if sort_option == 'price_asc' %}selected{% endif %}>Від дешевшого до дорожчого</option>
+                    <option value="price_desc" {% if sort_option == 'price_desc' %}selected{% endif %}>Від дорожчого до дешевшого</option>
+                </select>
+            </form>
+        </div>
+
+        <div class="row row-cols-auto g-4">
+            {% for course in courses %}
+                <div class="col">
+                    <div class="card" style="width: 18rem;">
+                        <img src="#" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <a class="card-title" href={% url "shop:single_course" course.id %}>{{ course.title }}</a>
+                            <p class="card-text mb-1">{{ course.category }}</p>
+                            <p class="card-text mb-1">{{ course.lecturers }}</p>
+                            <p class="card-text mb-1">{{ course.price }}</p>
+                            <a href="#" class="btn btn-primary">В кошик</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    {% endblock courses %}
