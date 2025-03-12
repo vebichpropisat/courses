@@ -1,6 +1,6 @@
 {% extends 'shop/base.html' %}
 
-    {% block title %}Basket{% endblock %}
+    {% block title %}Cart{% endblock %}
 
     {% block courses %}
 
@@ -10,7 +10,7 @@
             <h1 class="mb-4">Кошик</h1>
             <div class="row">
                 <div class="col-md-8">
-                    {% for course in basket_courses %}
+                    {% for cart_item in cart_courses %}
                         <div class="card mb-3">
                             <div class="row g-0">
                                 <div class="col-md-4">
@@ -18,13 +18,10 @@
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
-                                        <h5 class="card-title">{{ course.title }}</h5>
-                                        <p class="card-text"><strong>${{ course.price }}</strong></p>
-{#                                        <form method="post" action="{% url 'remove_from_basket' course.id %}">#}
-{#                                            {% csrf_token %}#}
-{#                                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>#}
-{#                                        </form>#}
-                                        <form method="post">
+                                        <h5 class="card-title">{{ cart_item.course.title }}</h5>
+                                        <p class="card-text"><strong>${{ cart_item.price }}</strong></p>
+                                        <form method="post" action="{% url 'shop:remove_from_cart' cart_item.id %}" class="remove-from-cart-form">
+                                            {% csrf_token %}
                                             <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
                                         </form>
                                     </div>
@@ -40,12 +37,10 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Огляд замовлення</h5>
-                            <p class="card-text">Загальна сума: <strong>${{ total_price }}</strong></p>
-{#                            <form method="post" action="{% url 'buy' %}">#}
-{#                                {% csrf_token %}#}
-{#                                <button type="submit" class="btn btn-success w-100">Купити</button>#}
-{#                            </form>#}
-                            <form method="post">
+                            <p class="card-text">Загальна сума: <strong id="total_price">${{ total_price }}</strong></p>
+                            <form method="post" action="{% url 'shop:order' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="price" value="{{ total_price }}">
                                 <button type="submit" class="btn btn-success w-100">Купити</button>
                             </form>
                         </div>
@@ -53,5 +48,6 @@
                 </div>
             </div>
         </div>
+
 
     {% endblock courses %}

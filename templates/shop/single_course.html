@@ -3,38 +3,43 @@
     {% block title %}{{ course.title }}{% endblock %}
 
     {% block courses %}
-        <h1 class="mt-5">{{ course.title }}</h1>
-        <h2>{{ course.category }}</h2>
-        <p class="rating_sum">Рейтинг:
-            <span class="stars">
-                <i class="bi bi-star"></i>
-                <i class="bi bi-star"></i>
-                <i class="bi bi-star"></i>
-                <i class="bi bi-star"></i>
-                <i class="bi bi-star"></i>
-            </span></p>
-        <p>Price: {{ course.price }}</p>
-        <p>Students Quantity: {{ course.students_qty }}</p>
-        <button class="btn btn-primary">Buy</button>
+        <div class="row">
+            <div class="col-md-4">
+                <img src="{{ course.poster.url }}" class="img-fluid rounded" alt="{{ course.title }}">
+            </div>
 
-        <script>
-            // Збираємо всі зірки
-            const stars = document.querySelectorAll('.stars .bi-star');
+            <div class="col-md-8">
+                <h1>{{ course.title }}</h1>
+                <h2>{{ course.category }}</h2>
+                <p>{{ course.lecturer }}</p>
+                <form action="{% url 'shop:add_rating' %}" method="post" name="rating" data-url="{% url 'shop:add_rating' %}">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ course.id }}" name="course">
+                    <p class="rating_sum">
+                        Рейтинг:
+                        <span class="rating">
+                            {% for star in "12345" %}
+                                <i class="bi bi-star" data-value="{{ star }}" style="margin-right: -2px"></i>
+                            {% endfor %}
+                        </span>
+                        <span id="avg_rating">{{ course.average_rating|default:0 }}</span>
+                    </p>
+                </form>
+                <p><strong>Ціна:</strong> ${{ course.price }}</p>
+                <p><strong>Кількість студентів:</strong> {{ course.students_qty }}</p>
+                <form method="POST" action="{% url 'shop:add_to_cart' course.id %}" class="add-to-cart-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">В кошик</button>
+                </form>
+            </div>
+        </div>
 
-            stars.forEach((star, index) => {
-                // При наведенні на зірку
-                star.addEventListener('mouseover', () => {
-                    for (let i = 0; i <= index; i++) {
-                        stars[i].classList.replace('bi-star', 'bi-star-fill');
-                    }
-                });
+        <div class="row mt-4">
+            <div class="col">
+                <h2>Про курс</h2>
+                <p>{{ course.description }}</p>
+            </div>
+        </div>
 
-                // Коли курсор йде з зірки
-                star.addEventListener('mouseout', () => {
-                    stars.forEach(star => {
-                        star.classList.replace('bi-star-fill', 'bi-star');
-                    });
-                });
-            });
-        </script>
+
     {% endblock courses%}

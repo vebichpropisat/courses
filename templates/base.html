@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,5 +13,8 @@
     {% block content %}
 
     {% endblock content %}
+    <script src="{% static 'js/remove_from_cart.js' %}"></script>
+    <script src="{% static 'js/add_rating.js' %}"></script>
+    <script src="{% static 'js/add_to_cart.js' %}"></script>
 </body>
 </html>

@@ -26,17 +26,21 @@
             {% for course in courses %}
                 <div class="col">
                     <div class="card" style="width: 18rem;">
-                        <img src="#" class="card-img-top" alt="...">
+                        <img src="{{ course.poster.url }}" class="card-img-top" alt="{{ course.title }}">
                         <div class="card-body">
                             <a class="card-title" href={% url "shop:single_course" course.id %}>{{ course.title }}</a>
                             <p class="card-text mb-1">{{ course.category }}</p>
                             <p class="card-text mb-1">{{ course.lecturers }}</p>
-                            <p class="card-text mb-1">{{ course.price }}</p>
-                            <a href="#" class="btn btn-primary">В кошик</a>
+                            <p class="card-text mb-1">${{ course.price }}</p>
+                            <form method="POST" action="{% url 'shop:add_to_cart' course.id %}" class="add-to-cart-form">
+                            {% csrf_token %}
+                                <button type="submit" class="btn btn-success">В кошик</button>
+                            </form>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
+
 
     {% endblock courses %}

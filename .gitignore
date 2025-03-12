@@ -1,1 +1,8 @@
 db.sqlite3
+.idea/
+pycache/
+.env
+*.pyc
+*.log
+.ruff_cache/
+Pipfile.lock

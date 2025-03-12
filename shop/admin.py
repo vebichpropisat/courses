@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Category, Lecturer, RatingStar, Rating
+from .models import Course, Category, Lecturer, Rating, Cart, CartItem, Order
 
 admin.site.site_header = "Courses Admin"
 admin.site.site_title = "My Courses"
@@ -27,8 +27,9 @@ admin.site.index_title = "Welcome to the Courses admin area"
 #     ]
 #     inlines = [CoursesInline]
 
+
 @admin.register(Category)
-class FacultyAdmin(admin.ModelAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     list_display = ("id", "title")
     list_display_links = ("title",)
 
@@ -40,11 +41,25 @@ class LecturerAdmin(admin.ModelAdmin):
 
 
 @admin.register(Course)
-class DisciplineAdmin(admin.ModelAdmin):
-    list_display = ("id", "title",)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "title",
+    )
     list_display_links = ("title",)
     search_fields = ("title",)
 
 
-admin.site.register(RatingStar)
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+    )
+    list_display_links = ("id",)
+    search_fields = ("id",)
+
+
 admin.site.register(Rating)
+admin.site.register(CartItem)
+admin.site.register(Order)
