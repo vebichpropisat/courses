@@ -42,10 +42,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "shop.apps.ShopConfig",
-    "api.apps.ApiConfig",
     "tastypie",
     "auth_app.apps.AuthAppConfig",
     "debug_toolbar",
+    'ckeditor',
 ]
 
 MIDDLEWARE = [

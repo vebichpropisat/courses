@@ -44,7 +44,7 @@
             <div class="col-md-6 position-relative">
                 <label for="validationTooltip03" class="form-label">Email</label>
                 <input type="email" placeholder="aaa@gmail.com" class="form-control {% if form.email.errors %}is-invalid{% endif %}"
-                       id="validationTooltip03" name="email" value="{{ form.email.value|default:'' }}" required>
+                       id="validationTooltip03" name="email" value="{% if form.email.errors %} {% else %}{{ form.email.value|default:'' }}{% endif %}" required>
                 {% if form.email.errors %}
                     <div class="invalid-tooltip">
                         {{ form.email.errors.0 }}

@@ -13,7 +13,9 @@ class RegisterForm(forms.ModelForm):
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if User.objects.filter(email=email).exists():
+        if not email:
+            raise forms.ValidationError("Email не може бути порожнім")
+        elif User.objects.filter(email=email).exists():
             raise forms.ValidationError("Користувач з таким email вже існує")
         return email
 
@@ -47,5 +49,6 @@ class LoginForm(forms.Form):
             password=self.cleaned_data.get("password"),
         )
         if user is None:
-            raise forms.ValidationError("Невірний пароль")
+            self.add_error("password", "Невірний пароль")
+            return None
         return user

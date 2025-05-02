@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from ckeditor.fields import RichTextField
 
 
 class Category(models.Model):
@@ -36,10 +37,9 @@ class Course(models.Model):
 
     title = models.CharField(max_length=300)
     poster = models.ImageField("Постер", upload_to="courses_images/")
-    price = models.FloatField()
-    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = RichTextField()
     students_qty = models.IntegerField()
-    reviews_qty = models.IntegerField()
     lecturer = models.ForeignKey(
         Lecturer,
         verbose_name="викладач",
@@ -102,7 +102,7 @@ class CartItem(models.Model):
 
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, verbose_name="курс", on_delete=models.CASCADE)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.course.title} у кошику {self.cart.user.username}"
@@ -117,7 +117,7 @@ class Order(models.Model):
 
     user = models.ForeignKey(User, verbose_name="користувач", on_delete=models.CASCADE)
     cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):

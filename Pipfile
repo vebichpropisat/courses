@@ -10,6 +10,7 @@ ruff = "*"
 django-debug-toolbar = "*"
 pillow = "*"
 python-dotenv = "*"
+django-ckeditor = "*"
 
 [dev-packages]
 

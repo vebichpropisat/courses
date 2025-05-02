@@ -5,18 +5,18 @@
     {% block courses %}
         <div class="row">
             <div class="col-md-4">
-                <img src="{{ course.poster.url }}" class="img-fluid rounded" alt="{{ course.title }}">
+                <img src="{{ course.poster.url }}" class="img-fluid rounded" alt="{{ course.title }}" style="min-width: 410px;">
             </div>
 
             <div class="col-md-8">
                 <h1>{{ course.title }}</h1>
-                <h2>{{ course.category }}</h2>
-                <p>{{ course.lecturer }}</p>
+                <h3>{{ course.category }}</h3>
+                <h3>{{ course.lecturer }}</h3>
                 <form action="{% url 'shop:add_rating' %}" method="post" name="rating" data-url="{% url 'shop:add_rating' %}">
                     {% csrf_token %}
                     <input type="hidden" value="{{ course.id }}" name="course">
                     <p class="rating_sum">
-                        Рейтинг:
+                        <strong>Рейтинг:</strong>
                         <span class="rating">
                             {% for star in "12345" %}
                                 <i class="bi bi-star" data-value="{{ star }}" style="margin-right: -2px"></i>
@@ -37,7 +37,7 @@
         <div class="row mt-4">
             <div class="col">
                 <h2>Про курс</h2>
-                <p>{{ course.description }}</p>
+                <p>{{ course.description|safe }}</p>
             </div>
         </div>
 

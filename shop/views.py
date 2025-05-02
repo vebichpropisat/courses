@@ -13,6 +13,16 @@ COURSES_SORT_MAPPING = {
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
+    categories = Category.objects.all()
+
+    return render(
+        request,
+        "shop/index.html",
+        {"categories": categories},
+    )
+
+
+def courses_view(request: HttpRequest) -> HttpResponse:
     sort_option = request.GET.get("sort", "")
     courses = Course.objects.select_related("category").all()
     categories = Category.objects.all()
@@ -145,7 +155,7 @@ def order_view(request: HttpRequest) -> HttpResponse:
         cart.status = "ordered"
         cart.save()
         Order.objects.create(
-            user=request.user, cart=cart, price=request.POST.get("price")
+            user=request.user, cart=cart, price=request.POST.get("price").replace(',', '.')
         )
         return redirect("shop:index")
 

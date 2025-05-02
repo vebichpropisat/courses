@@ -25,10 +25,10 @@
         <div class="row row-cols-auto g-4">
             {% for course in courses %}
                 <div class="col">
-                    <div class="card" style="width: 18rem;">
+                    <div class="card shadow-sm" style="width: 18rem;">
                         <img src="{{ course.poster.url }}" class="card-img-top" alt="{{ course.title }}">
                         <div class="card-body">
-                            <a class="card-title" href={% url "shop:single_course" course.id %}>{{ course.title }}</a>
+                            <a class="card-title text-truncate d-block" style="max-width: 100%;" href={% url "shop:single_course" course.id %}>{{ course.title }}</a>
                             <p class="card-text mb-1">{{ course.category }}</p>
                             <p class="card-text mb-1">{{ course.lecturers }}</p>
                             <p class="card-text mb-1">${{ course.price }}</p>

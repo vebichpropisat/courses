@@ -1,0 +1,54 @@
+{% extends 'shop/base.html' %}
+
+    {% block title %}ITC Shop{% endblock %}
+
+    {% block courses %}
+        <header class="text-white text-center py-5" style="background: url('/static/img/index.jpg') no-repeat center center; background-size: cover;">
+            <div class="container">
+                <h1 class="display-4 fw-bold">Ласкаво просимо в ITC Shop</h1>
+                <p class="lead">Твоя платформа для онлайн-курсів з IT</p>
+                <a href="{% url 'shop:all_courses' %}" class="btn btn-light btn-lg mt-3">Переглянути курси</a>
+            </div>
+        </header>
+
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Переваги ITC Shop</h2>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Найкращі курси</h5>
+                                <p class="card-text">Ми пропонуємо тільки найактуальніші та перевірені програми навчання.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Експертні викладачі</h5>
+                                <p class="card-text">Викладачі — практики з реальним досвідом роботи в ІТ-компаніях.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Гнучке навчання</h5>
+                                <p class="card-text">Вчися в зручний час та в зручному місці зі свого комп'ютера чи смартфона.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="row mt-4">
+            <div class="col">
+                <h2>Про нас</h2>
+                <p class="fs-5">ITC Shop – найбільша онлайн-платформа професійного розвитку в Україні, була заснована у 2014 році.
+                    Вже 10 років ми створюємо курси та професійні програми, допомагаємо партнерам систематизувати свій досвід та передавати його далі, перекладаємо кращі світові матеріали та робимо найкращих викладачів доступними кожному.
+                    Ми підтримуємо навчальну складову найважливіших державних реформ і забезпечуємо доступ до знань навіть у найскладніші часи.</p>
+            </div>
+        </div>
+    {% endblock courses%}

@@ -11,14 +11,14 @@
             <div class="row">
                 <div class="col-md-8">
                     {% for cart_item in cart_courses %}
-                        <div class="card mb-3">
+                        <div class="card mb-3 shadow-sm">
                             <div class="row g-0">
                                 <div class="col-md-4">
-                                    <img src="..." class="img-fluid rounded-start" alt="...">
+                                    <img src="{{ cart_item.course.poster.url }}" class="img-fluid rounded-start" alt="{{ cart_item.course.title }}">
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body">
-                                        <h5 class="card-title">{{ cart_item.course.title }}</h5>
+                                        <a class="card-title" style="max-width: 100%;" href={% url "shop:single_course" cart_item.course.id %}>{{ cart_item.course.title }}</a>
                                         <p class="card-text"><strong>${{ cart_item.price }}</strong></p>
                                         <form method="post" action="{% url 'shop:remove_from_cart' cart_item.id %}" class="remove-from-cart-form">
                                             {% csrf_token %}
@@ -37,7 +37,7 @@
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Огляд замовлення</h5>
-                            <p class="card-text">Загальна сума: <strong id="total_price">${{ total_price }}</strong></p>
+                            <p class="card-text">Загальна сума: <strong id="total_price">${{ total_price|floatformat:2 }}</strong></p>
                             <form method="post" action="{% url 'shop:order' %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="price" value="{{ total_price }}">

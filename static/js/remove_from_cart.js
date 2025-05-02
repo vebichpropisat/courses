@@ -18,12 +18,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success) {
                     alert(data.message);
                     const card = form.closest('.card');
-                    const price = parseFloat(card.querySelector('.card-text strong').textContent.replace('$', '')) || 0;
+                    const price = parseFloat(card.querySelector('.card-text strong').textContent.replace('$', '').replace(',', '.')) || 0;
 
                     card.remove();
 
                     const totalPriceElement = document.querySelector("#total_price");
-                    let totalPrice = parseFloat(totalPriceElement.textContent.replace('$', '')) || 0;
+                    let totalPrice = parseFloat(totalPriceElement.textContent.replace('$', '').replace(',', '.')) || 0;
                     totalPrice -= price;
                     totalPriceElement.textContent = `$${totalPrice.toFixed(2)}`;
                 } else {
