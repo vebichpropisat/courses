@@ -11,6 +11,11 @@ django-debug-toolbar = "*"
 pillow = "*"
 python-dotenv = "*"
 django-ckeditor = "*"
+gevent = "*"
+gunicorn = "*"
+django-redis = "*"
+elasticsearch = "*"
+django-elasticsearch-dsl = "*"
 
 [dev-packages]
 

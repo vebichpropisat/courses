@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "auth_app.apps.AuthAppConfig",
     "debug_toolbar",
     'ckeditor',
+    'django_elasticsearch_dsl',
 ]
 
 MIDDLEWARE = [
@@ -86,9 +87,29 @@ WSGI_APPLICATION = "base.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        'NAME': os.path.join(BASE_DIR, 'db/db.sqlite3'),
+        # "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",  # 1 — номер БД Redis
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+# Elasticsearch
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': 'localhost:9200'
+    },
+}
+
 
 
 # Password validation
