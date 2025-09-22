@@ -16,6 +16,8 @@ gunicorn = "*"
 django-redis = "*"
 elasticsearch = "*"
 django-elasticsearch-dsl = "*"
+mypy = "*"
+django-stubs = "*"
 
 [dev-packages]
 

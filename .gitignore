@@ -6,3 +6,4 @@ pycache/
 *.log
 .ruff_cache/
 Pipfile.lock
+mypy.ini

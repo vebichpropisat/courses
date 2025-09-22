@@ -1,13 +1,17 @@
+from typing import Dict, Optional, Tuple
+
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpRequest, HttpResponse
 from .models import Course, Category, Rating, Cart, CartItem, Order
-from django.db.models import Sum
+from django.db.models import Sum, QuerySet
 from django.core.cache import cache
 from django.core.paginator import Paginator
 from functools import wraps
 from .documents import CourseDocument
 import hashlib
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
 
 
 COURSES_SORT_MAPPING = {
@@ -17,11 +21,14 @@ COURSES_SORT_MAPPING = {
     "price_desc": "-price",
 }
 
+
 def redis_cache(timeout=60):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(*args, **kwargs):
-            cache_key = hashlib.md5(f"{view_func.__name__}:{args}:{kwargs}".encode()).hexdigest()
+            cache_key = hashlib.md5(
+                f"{view_func.__name__}:{args}:{kwargs}".encode()
+            ).hexdigest()
 
             cached_context = cache.get(cache_key)
             if cached_context:
@@ -32,11 +39,15 @@ def redis_cache(timeout=60):
             cache.set(cache_key, context, timeout=timeout)
 
             return context
+
         return _wrapped_view
+
     return decorator
 
 
-def paginate(courses, page_number, items_per_page=12):
+def paginate(
+    courses: QuerySet[Course], page_number: int, items_per_page: int = 12
+) -> Tuple:
     paginator = Paginator(courses, items_per_page)
     page_obj = paginator.get_page(page_number)
     courses = page_obj.object_list
@@ -44,14 +55,21 @@ def paginate(courses, page_number, items_per_page=12):
     return courses, page_obj
 
 
-def sort_courses_view(courses: "QuerySet", sort_option: str) -> "QuerySet":
+def sort_courses_view(courses: QuerySet[Course], sort_option: str) -> QuerySet[Course]:
     if sort_by := COURSES_SORT_MAPPING.get(sort_option):
         return courses.order_by(sort_by)
     return courses
 
 
-@redis_cache(timeout=60*60*2)
-def get_categories():
+@receiver(post_save, sender=Category)
+@receiver(pre_delete, sender=Category)
+def invalidate_categories_cache(*_, **__) -> None:
+    cache_key = hashlib.md5(f"get_categories:{()}:{()}".encode()).hexdigest()
+    cache.delete(cache_key)
+
+
+@redis_cache(timeout=60 * 60 * 2)
+def get_categories() -> QuerySet[Category]:
     categories = Category.objects.all()
     return categories
 
@@ -66,26 +84,33 @@ def index_view(request: HttpRequest) -> HttpResponse:
     )
 
 
-def get_courses(sort_option, page_number=None):
+def get_courses(sort_option: str, page_number: int = None) -> Dict:
     courses = Course.objects.select_related("category").all()
     categories = get_categories()
 
     courses = sort_courses_view(courses, sort_option)
     courses, page_obj = paginate(courses, page_number)
 
-    return {"courses": courses, "categories": categories, "sort_option": sort_option, "page_obj": page_obj}
+    return {
+        "courses": courses,
+        "categories": categories,
+        "sort_option": sort_option,
+        "page_obj": page_obj,
+    }
 
 
 def courses_view(request: HttpRequest) -> HttpResponse:
     sort_option = request.GET.get("sort", "")
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
 
     context = get_courses(sort_option, page_number=page_number)
 
     return render(request, "shop/courses.html", context)
 
 
-def get_categories_courses(category_id, sort_option, page_number=None):
+def get_categories_courses(
+    category_id: int, sort_option: str, page_number: int = None
+) -> Dict:
     category = get_object_or_404(Category, pk=category_id)
     courses = Course.objects.filter(category=category).select_related("category")
     categories = get_categories()
@@ -93,21 +118,28 @@ def get_categories_courses(category_id, sort_option, page_number=None):
     courses = sort_courses_view(courses, sort_option)
     courses, page_obj = paginate(courses, page_number)
 
-    return {"courses": courses, "categories": categories, "sort_option": sort_option, "page_obj": page_obj}
+    return {
+        "courses": courses,
+        "categories": categories,
+        "sort_option": sort_option,
+        "page_obj": page_obj,
+    }
 
 
 def categories_courses_view(request: HttpRequest, category_id: int) -> HttpResponse:
     sort_option = request.GET.get("sort", "")
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
 
     context = get_categories_courses(category_id, sort_option, page_number=page_number)
 
     return render(request, "shop/courses.html", context)
 
 
-@redis_cache(timeout=60*5)
-def get_single_course(course_id):
-    course = get_object_or_404(Course.objects.select_related("category", "lecturer"), pk=course_id)
+@redis_cache(timeout=60 * 5)
+def get_single_course(course_id: int) -> Dict:
+    course = get_object_or_404(
+        Course.objects.select_related("category", "lecturer"), pk=course_id
+    )
     categories = get_categories()
     print("БД")
     return {"course": course, "categories": categories}
@@ -117,10 +149,12 @@ def single_course_view(request: HttpRequest, course_id: int) -> HttpResponse:
 
     context = get_single_course(course_id)
 
-    return render(request,"shop/single_course.html", context)
+    return render(request, "shop/single_course.html", context)
 
 
-def get_search_courses(search_query, sort_option, page_number=None):
+def get_search_courses(
+    search_query: str, sort_option: str, page_number: int = None
+) -> Dict:
     if search_query:
         search_courses = Course.objects.filter(
             title__icontains=search_query
@@ -132,13 +166,19 @@ def get_search_courses(search_query, sort_option, page_number=None):
     courses = sort_courses_view(search_courses, sort_option)
     courses, page_obj = paginate(courses, page_number)
 
-    return {"courses": courses, "sort_option": sort_option, "categories": categories, "search": search_query, "page_obj": page_obj}
+    return {
+        "courses": courses,
+        "sort_option": sort_option,
+        "categories": categories,
+        "search": search_query,
+        "page_obj": page_obj,
+    }
 
 
 def search_courses_view(request: HttpRequest) -> HttpResponse:
     sort_option = request.GET.get("sort", "")
     search_query = request.GET.get("search", "").strip()
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
 
     context = get_search_courses(search_query, sort_option, page_number=page_number)
 
@@ -186,16 +226,22 @@ def add_rating_view(request: HttpRequest) -> JsonResponse:
 
 def add_to_cart_view(request: HttpRequest, course_id: int) -> JsonResponse:
     if not request.user.is_authenticated:
-        return JsonResponse({
-            "success": False,
-            "message": "Потрібно увійти в акаунт, щоб додати курс у кошик."
-        }, status=401)
+        return JsonResponse(
+            {
+                "success": False,
+                "message": "Потрібно увійти в акаунт, щоб додати курс у кошик.",
+            },
+            status=401,
+        )
 
     elif request.method == "POST":
         course = get_object_or_404(Course, id=course_id)
         cart, created = Cart.objects.get_or_create(user=request.user, status="active")
         if CartItem.objects.filter(cart__user=request.user, course=course).exists():
-            return JsonResponse({"success": False, "message": "Цей курс вже є у вашому кошику."}, status=400)
+            return JsonResponse(
+                {"success": False, "message": "Цей курс вже є у вашому кошику."},
+                status=400,
+            )
 
         CartItem.objects.create(cart=cart, course=course, price=course.price)
         return JsonResponse({"success": True, "message": "Курс додано в кошик"})
@@ -256,7 +302,7 @@ def order_view(request: HttpRequest) -> HttpResponse:
         Order.objects.create(
             user=request.user,
             cart=cart,
-            price=request.POST.get("price", "0").replace(",", ".")
+            price=request.POST.get("price", "0").replace(",", "."),
         )
         messages.success(request, "Замовлення успішно оформлено.")
         return redirect("shop:index")
