@@ -1,5 +1,4 @@
 from django.contrib import messages
-from django.db.models.fields.tuple_lookups import Tuple
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpRequest, HttpResponse
 from .models import Course, Category, Rating, Cart, CartItem, Order
@@ -9,8 +8,6 @@ from django.core.paginator import Paginator
 from functools import wraps
 from .documents import CourseDocument
 import hashlib
-import json
-from django.views.decorators.cache import cache_page
 
 
 COURSES_SORT_MAPPING = {
@@ -53,8 +50,14 @@ def sort_courses_view(courses: "QuerySet", sort_option: str) -> "QuerySet":
     return courses
 
 
-def index_view(request: HttpRequest) -> HttpResponse:
+@redis_cache(timeout=60*60*2)
+def get_categories():
     categories = Category.objects.all()
+    return categories
+
+
+def index_view(request: HttpRequest) -> HttpResponse:
+    categories = get_categories()
 
     return render(
         request,
@@ -65,7 +68,7 @@ def index_view(request: HttpRequest) -> HttpResponse:
 
 def get_courses(sort_option, page_number=None):
     courses = Course.objects.select_related("category").all()
-    categories = Category.objects.all()
+    categories = get_categories()
 
     courses = sort_courses_view(courses, sort_option)
     courses, page_obj = paginate(courses, page_number)
@@ -85,7 +88,7 @@ def courses_view(request: HttpRequest) -> HttpResponse:
 def get_categories_courses(category_id, sort_option, page_number=None):
     category = get_object_or_404(Category, pk=category_id)
     courses = Course.objects.filter(category=category).select_related("category")
-    categories = Category.objects.all()
+    categories = get_categories()
 
     courses = sort_courses_view(courses, sort_option)
     courses, page_obj = paginate(courses, page_number)
@@ -105,7 +108,7 @@ def categories_courses_view(request: HttpRequest, category_id: int) -> HttpRespo
 @redis_cache(timeout=60*5)
 def get_single_course(course_id):
     course = get_object_or_404(Course.objects.select_related("category", "lecturer"), pk=course_id)
-    categories = Category.objects.all()
+    categories = get_categories()
     print("БД")
     return {"course": course, "categories": categories}
 
@@ -124,7 +127,7 @@ def get_search_courses(search_query, sort_option, page_number=None):
         ).select_related("category")
     else:
         search_courses = Course.objects.all().select_related("category")
-    categories = Category.objects.all()
+    categories = get_categories()
 
     courses = sort_courses_view(search_courses, sort_option)
     courses, page_obj = paginate(courses, page_number)
@@ -210,7 +213,7 @@ def cart_view(request: HttpRequest) -> HttpResponse:
     cart_courses = CartItem.objects.filter(
         cart__user=request.user, cart__status="active"
     ).select_related("cart", "course")
-    categories = Category.objects.all()
+    categories = get_categories()
     total_price = cart_courses.aggregate(Sum("price"))["price__sum"] or 0
     return render(
         request,
