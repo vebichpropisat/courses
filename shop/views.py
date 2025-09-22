@@ -39,24 +39,18 @@ def redis_cache(timeout=60):
     return decorator
 
 
-def paginate(items_per_page=12, object_name='courses'):
-    def decorator(func):
-        @wraps(func)
-        def _wrapped_view(*args, **kwargs):
-            context = func(*args, **kwargs)
+def paginate(courses, page_number, items_per_page=12):
+    paginator = Paginator(courses, items_per_page)
+    page_obj = paginator.get_page(page_number)
+    courses = page_obj.object_list
 
-            if object_name in context:
-                objects = context[object_name]
-                paginator = Paginator(objects, items_per_page)
-                page_number = kwargs.get("page_number")
-                page_obj = paginator.get_page(page_number)
-                context['page_obj'] = page_obj
-                context[object_name] = page_obj.object_list
+    return courses, page_obj
 
-            return context
 
-        return _wrapped_view
-    return decorator
+def sort_courses_view(courses: "QuerySet", sort_option: str) -> "QuerySet":
+    if sort_by := COURSES_SORT_MAPPING.get(sort_option):
+        return courses.order_by(sort_by)
+    return courses
 
 
 def index_view(request: HttpRequest) -> HttpResponse:
@@ -69,14 +63,14 @@ def index_view(request: HttpRequest) -> HttpResponse:
     )
 
 
-@paginate(items_per_page=12, object_name='courses',)
 def get_courses(sort_option, page_number=None):
     courses = Course.objects.select_related("category").all()
     categories = Category.objects.all()
 
     courses = sort_courses_view(courses, sort_option)
+    courses, page_obj = paginate(courses, page_number)
 
-    return {"courses": courses, "categories": categories, "sort_option": sort_option,}
+    return {"courses": courses, "categories": categories, "sort_option": sort_option, "page_obj": page_obj}
 
 
 def courses_view(request: HttpRequest) -> HttpResponse:
@@ -88,15 +82,15 @@ def courses_view(request: HttpRequest) -> HttpResponse:
     return render(request, "shop/courses.html", context)
 
 
-@paginate(items_per_page=12, object_name='courses',)
 def get_categories_courses(category_id, sort_option, page_number=None):
     category = get_object_or_404(Category, pk=category_id)
     courses = Course.objects.filter(category=category).select_related("category")
     categories = Category.objects.all()
 
     courses = sort_courses_view(courses, sort_option)
+    courses, page_obj = paginate(courses, page_number)
 
-    return {"courses": courses, "categories": categories, "sort_option": sort_option,}
+    return {"courses": courses, "categories": categories, "sort_option": sort_option, "page_obj": page_obj}
 
 
 def categories_courses_view(request: HttpRequest, category_id: int) -> HttpResponse:
@@ -107,12 +101,14 @@ def categories_courses_view(request: HttpRequest, category_id: int) -> HttpRespo
 
     return render(request, "shop/courses.html", context)
 
+
 @redis_cache(timeout=60*5)
 def get_single_course(course_id):
     course = get_object_or_404(Course.objects.select_related("category", "lecturer"), pk=course_id)
     categories = Category.objects.all()
     print("БД")
     return {"course": course, "categories": categories}
+
 
 def single_course_view(request: HttpRequest, course_id: int) -> HttpResponse:
 
@@ -121,14 +117,6 @@ def single_course_view(request: HttpRequest, course_id: int) -> HttpResponse:
     return render(request,"shop/single_course.html", context)
 
 
-
-def sort_courses_view(courses: "QuerySet", sort_option: str) -> "QuerySet":
-    if sort_by := COURSES_SORT_MAPPING.get(sort_option):
-        return courses.order_by(sort_by)
-    return courses
-
-
-@paginate(items_per_page=12, object_name='courses',)
 def get_search_courses(search_query, sort_option, page_number=None):
     if search_query:
         search_courses = Course.objects.filter(
@@ -139,8 +127,9 @@ def get_search_courses(search_query, sort_option, page_number=None):
     categories = Category.objects.all()
 
     courses = sort_courses_view(search_courses, sort_option)
+    courses, page_obj = paginate(courses, page_number)
 
-    return {"courses": courses, "sort_option": sort_option, "categories": categories, "search": search_query,}
+    return {"courses": courses, "sort_option": sort_option, "categories": categories, "search": search_query, "page_obj": page_obj}
 
 
 def search_courses_view(request: HttpRequest) -> HttpResponse:
