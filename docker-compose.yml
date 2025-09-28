@@ -28,7 +28,7 @@ services:
       - courses-net
     volumes:
       - .:/app
-      - ./db:/app/db
+#      - ./db:/app/db     --Этой бд больше нет. НЕЗАБУДЬ ИСПРАВИТЬ, ЗАХАР!!
     ports:
       - "8000:8000"
 

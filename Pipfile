@@ -18,6 +18,7 @@ elasticsearch = "*"
 django-elasticsearch-dsl = "*"
 mypy = "*"
 django-stubs = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 
