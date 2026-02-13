@@ -7,18 +7,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shop', '0003_lecturer_ratingstar_alter_category_options_and_more'),
+        ("shop", "0003_lecturer_ratingstar_alter_category_options_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='course',
-            name='lecturers',
+            model_name="course",
+            name="lecturers",
         ),
         migrations.AddField(
-            model_name='course',
-            name='lecturers',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='course_lecturer', to='shop.lecturer', verbose_name='викладач'),
+            model_name="course",
+            name="lecturers",
+            field=models.ForeignKey(
+                default=1,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="course_lecturer",
+                to="shop.lecturer",
+                verbose_name="викладач",
+            ),
             preserve_default=False,
         ),
     ]

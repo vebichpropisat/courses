@@ -1,0 +1,36 @@
+<footer id="contacts" class="bg-dark text-white pt-5 mt-5">
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <!-- Логотип та навігація зліва -->
+            <div class="d-flex mb-2">
+                <div class="me-4">
+                    <h6 class="text-uppercase fw-bold">ITC Shop</h6>
+                    <p>Твоя улюблена платформа для покупки IT курсів.</p>
+                </div>
+                <div>
+                    <h6 class="text-uppercase fw-bold">Навігація</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'shop:index' %}" class="text-white text-decoration-none">Головна</a></li>
+                        <li><a href="{% url 'shop:all_courses' %}" class="text-white text-decoration-none">Курси</a></li>
+                        <li><a href="{% url 'shop:cart' %}" class="text-white text-decoration-none">Кошик</a></li>
+                        <li><a href="#contacts" class="text-white text-decoration-none">Контакти</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Соцмережі справа -->
+            <div class="mb-2">
+                <h6 class="text-uppercase fw-bold">Ми в соцмережах</h6>
+                <a href="#" class="text-white me-3"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center p-3 border-top mt-4" style="background-color: rgba(0, 0, 0, 0.2);">
+        &copy; 2025 ITC Shop. Всі права захищено.
+    </div>
+</footer>
+

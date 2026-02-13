@@ -1,0 +1,58 @@
+{% extends 'shop/base.html' %}
+
+    {% block title %}Cart{% endblock %}
+
+    {% block courses %}
+
+
+        {# ИЗМЕНИТЬ #}
+        <div class="container mt-4">
+            <h1 class="mb-4">Кошик</h1>
+            <div class="row">
+                <div class="col-md-8">
+                    {% for cart_item in cart_courses %}
+                        <div class="card mb-3 shadow-sm">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="{{ cart_item.course.poster.url }}" class="img-fluid rounded-start" alt="{{ cart_item.course.title }}">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <a class="card-title" style="max-width: 100%;" href={% url "shop:single_course" cart_item.course.id %}>{{ cart_item.course.title }}</a>
+                                        <p class="card-text"><strong>${{ cart_item.price }}</strong></p>
+                                        <form method="post" action="{% url 'shop:remove_from_cart' cart_item.id %}" class="remove-from-cart-form">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>Ваш кошик порожній.</p>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Огляд замовлення</h5>
+                            <p class="card-text">Загальна сума: <strong id="total_price">${{ total_price|floatformat:2 }}</strong></p>
+                            <form method="post" action="{% url 'shop:order' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="price" value="{{ total_price }}">
+                                <button type="submit" class="btn btn-success w-100">Купити</button>
+                            </form>
+                            {% if messages %}
+                              {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                              {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    {% endblock courses %}

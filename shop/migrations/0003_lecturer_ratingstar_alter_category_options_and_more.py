@@ -8,59 +8,114 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('shop', '0002_alter_course_title'),
+        ("shop", "0002_alter_course_title"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Lecturer',
+            name="Lecturer",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('surname', models.CharField(default=None, max_length=20, verbose_name='Прізвище')),
-                ('name', models.CharField(max_length=20, verbose_name="Ім'я")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "surname",
+                    models.CharField(
+                        default=None, max_length=20, verbose_name="Прізвище"
+                    ),
+                ),
+                ("name", models.CharField(max_length=20, verbose_name="Ім'я")),
             ],
             options={
-                'verbose_name': 'Викладач',
-                'verbose_name_plural': 'Викладачі',
+                "verbose_name": "Викладач",
+                "verbose_name_plural": "Викладачі",
             },
         ),
         migrations.CreateModel(
-            name='RatingStar',
+            name="RatingStar",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('value', models.SmallIntegerField(default=0, verbose_name='Значення')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("value", models.SmallIntegerField(default=0, verbose_name="Значення")),
             ],
             options={
-                'verbose_name': 'Зірка рейтингу',
-                'verbose_name_plural': 'Зірки рейтингу',
-                'ordering': ['-value'],
+                "verbose_name": "Зірка рейтингу",
+                "verbose_name_plural": "Зірки рейтингу",
+                "ordering": ["-value"],
             },
         ),
         migrations.AlterModelOptions(
-            name='category',
-            options={'verbose_name': 'Категорія', 'verbose_name_plural': 'Категорії'},
+            name="category",
+            options={"verbose_name": "Категорія", "verbose_name_plural": "Категорії"},
         ),
         migrations.AlterModelOptions(
-            name='course',
-            options={'verbose_name': 'Курс', 'verbose_name_plural': 'Курси'},
+            name="course",
+            options={"verbose_name": "Курс", "verbose_name_plural": "Курси"},
         ),
         migrations.AddField(
-            model_name='course',
-            name='lecturers',
-            field=models.ManyToManyField(related_name='course_lecturer', to='shop.lecturer', verbose_name='викладачі'),
+            model_name="course",
+            name="lecturers",
+            field=models.ManyToManyField(
+                related_name="course_lecturer",
+                to="shop.lecturer",
+                verbose_name="викладачі",
+            ),
         ),
         migrations.CreateModel(
-            name='Rating',
+            name="Rating",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('discipline', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.course', verbose_name='курс')),
-                ('user', models.ForeignKey(default='', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='користувач')),
-                ('star', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.ratingstar', verbose_name='зірка')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "discipline",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.course",
+                        verbose_name="курс",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        default="",
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="користувач",
+                    ),
+                ),
+                (
+                    "star",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="shop.ratingstar",
+                        verbose_name="зірка",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Рейтинг',
-                'verbose_name_plural': 'Рейтинги',
+                "verbose_name": "Рейтинг",
+                "verbose_name_plural": "Рейтинги",
             },
         ),
     ]

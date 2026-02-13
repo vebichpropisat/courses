@@ -2,9 +2,10 @@
     {% block title %} Home {% endblock title %}
     {% block content %}
         {% include "include/header.html" %}
-        <main class="container mt-5">
+        <main class="container mt-5 flex-grow-1">
             {% block courses %}
 
             {% endblock courses %}
         </main>
+        {% include "include/footer.html" %}
     {% endblock content %}

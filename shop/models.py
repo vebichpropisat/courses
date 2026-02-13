@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from ckeditor.fields import RichTextField
 
 
 class Category(models.Model):
@@ -35,43 +36,41 @@ class Course(models.Model):
     """Курси"""
 
     title = models.CharField(max_length=300)
-    price = models.FloatField()
+    poster = models.ImageField("Постер", upload_to="courses_images/")
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = RichTextField()
     students_qty = models.IntegerField()
-    reviews_qty = models.IntegerField()
-    lecturers = models.ForeignKey(Lecturer, verbose_name="викладач", related_name="course_lecturer", on_delete=models.CASCADE)
+    lecturer = models.ForeignKey(
+        Lecturer,
+        verbose_name="викладач",
+        related_name="course_lecturer",
+        on_delete=models.CASCADE,
+    )
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title
 
+    def average_rating(self):
+        ratings = Rating.objects.filter(course=self)
+        if ratings.exists():
+            return sum(rating.star for rating in ratings) / ratings.count()
+        return 0
+
     class Meta:
         verbose_name = "Курс"
         verbose_name_plural = "Курси"
 
 
-class RatingStar(models.Model):
-    """Зірка рейтингу"""
-
-    value = models.SmallIntegerField("Значення", default=0)
-
-    def __str__(self):
-        return f"{self.value}"
-
-    class Meta:
-        verbose_name = "Зірка рейтингу"
-        verbose_name_plural = "Зірки рейтингу"
-        ordering = ["-value"]
-
-
 class Rating(models.Model):
     """Рейтинг"""
 
-    user = models.ForeignKey(User, verbose_name="користувач", on_delete=models.CASCADE, default='')
-    star = models.ForeignKey(RatingStar, verbose_name="зірка", on_delete=models.CASCADE)
-    course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, verbose_name="курс"
+    user = models.ForeignKey(
+        User, verbose_name="користувач", on_delete=models.CASCADE, default=""
     )
+    star = models.PositiveSmallIntegerField("зірки", default=1)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name="курс")
 
     def __str__(self):
         return f"{self.star} - {self.course}"
@@ -79,3 +78,51 @@ class Rating(models.Model):
     class Meta:
         verbose_name = "Рейтинг"
         verbose_name_plural = "Рейтинги"
+        unique_together = ("user", "course")
+
+
+class Cart(models.Model):
+    """Кошик"""
+
+    user = models.ForeignKey(User, verbose_name="користувач", on_delete=models.CASCADE)
+    status = models.CharField(max_length=300, default="active")
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Кошик {self.user.username}"
+
+    class Meta:
+        verbose_name = "Кошик"
+        verbose_name_plural = "Кошики"
+
+
+class CartItem(models.Model):
+    """Товар в кошику"""
+
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, verbose_name="курс", on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.course.title} у кошику {self.cart.user.username}"
+
+    class Meta:
+        verbose_name = "Товар в кошику"
+        verbose_name_plural = "Товари в кошику"
+
+
+class Order(models.Model):
+    """Замовлення"""
+
+    user = models.ForeignKey(User, verbose_name="користувач", on_delete=models.CASCADE)
+    cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Замовлення {self.id} - {self.user.username})"
+
+    class Meta:
+        verbose_name = "Замовлення"
+        verbose_name_plural = "Замовлення"
